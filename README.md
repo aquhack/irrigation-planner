@@ -1,2 +1,2 @@
 # irrigation-planner
-Irrigation Planner Android App
+Irrigation Planner Android App using AI
