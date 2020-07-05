@@ -1,250 +1,130 @@
-import React, { Component } from 'react'
-import {
-  StyleSheet,
-  View,
-  Text,
-  Dimensions,
-  TouchableOpacity
-} from 'react-native'
 
-import MapView, {
-  MAP_TYPES,
-  Polygon,
-  Marker,
-  ProviderPropType,
-  PROVIDER_GOOGLE
-} from 'react-native-maps'
-import * as Location from 'expo-location'
-import * as Permissions from 'expo-permissions'
+import 'react-native-gesture-handler';
 
+import * as React from 'react';
+import { Button, View, Text, TouchableOpacity, Image } from 'react-native';
 
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
-const { width, height } = Dimensions.get('window')
+import FirstPage from './pages/after_page/FirstPage'
+import SecondPage from './pages/after_page/SecondPage'
+import ThirdPage from './pages/after_page/Thirdpage'
+const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
 
-const ASPECT_RATIO = width / height
-const LATITUDE = 37.78825
-const LONGITUDE = -122.4324
-const LATITUDE_DELTA = 0.0922
-const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO
-let id = 0
+const NavigationDrawerStructure = (props)=> {
+  //Structure for the navigatin Drawer
+  const toggleDrawer = () => {
+    //Props to open/close the drawer
+    props.navigationProps.toggleDrawer();
+  };
 
-class Maps extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      region: {
-        latitude: LATITUDE,
-        longitude: LONGITUDE,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA
-      },
-      polygons: [],
-      editing: null,
-      creatingHole: false
-    }
-  }
-  async componentDidMount(){
-    const { status, permission } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status === 'granted') {
-      let location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
-      let reg = {...this.state.region}
-      reg.latitude = location.coords.latitude
-      reg.longitude = location.coords.longitude
-      this.setState({region:reg})
-    } else {
-      throw new Error('Location permission not granted');
-    }
-  }
-
-  finish() {
-   const { polygons, editing } = this.state;
-   this.setState({
-   polygons: [...polygons, editing],
-   editing: null,
-   creatingHole: false,
-  });
-  }
-
-  clear = () => {
-    this.setState({
-      polygons: [],
-      editing: null,
-      creatingHole: false
-    })
-  }
-
-  createHole() {
-    const { editing, creatingHole } = this.state
-    if (!creatingHole) {
-      this.setState({
-        creatingHole: true,
-        editing: {
-          ...editing,
-          holes: [...editing.holes, []]
-        }
-      })
-    } else {
-      const holes = [...editing.holes]
-      if (holes[holes.length - 1].length === 0) {
-        holes.pop()
-        this.setState({
-          editing: {
-            ...editing,
-            holes
-          }
-        })
-      }
-      this.setState({ creatingHole: false })
-    }
-  }
-
-  onPress(e) {
-    if(this.state.polygons.length > 0)
-    {
-    console.log(this.state.polygons)
-  }
-    const { editing, creatingHole } = this.state
-    if (!editing) {
-      this.setState({
-        editing: {
-          id: id++,
-          coordinates: [e.nativeEvent.coordinate],
-          holes: []
-        }
-      })
-    } else if (!creatingHole) {
-      this.setState({
-        editing: {
-          ...editing,
-          coordinates: [...editing.coordinates, e.nativeEvent.coordinate]
-        }
-      })
-    } else {
-      const holes = [...editing.holes]
-      holes[holes.length - 1] = [
-        ...holes[holes.length - 1],
-        e.nativeEvent.coordinate
-      ]
-      this.setState({
-        editing: {
-          ...editing,
-          id: id++, // keep incrementing id to trigger display refresh
-          coordinates: [...editing.coordinates],
-          holes
-        }
-      })
-    }
-    
-  }
-
-  render() {
-    const mapOptions = {
-      scrollEnabled: true
-    }
-
-    if (this.state.editing) {
-      mapOptions.scrollEnabled = false
-      mapOptions.onPanDrag = e => this.onPress(e)
-    }
-
-    return (
-      <View style={styles.container}>
-        <MapView
-          provider={PROVIDER_GOOGLE}
-          style={styles.map}
-          mapType={MAP_TYPES.HYBRID}
-          initialRegion={this.state.region}
-          onPress={e => this.onPress(e)}
-          {...mapOptions}
-        >
-          <Marker coordinate={{latitude:this.state.region.latitude,longitude:this.state.region.longitude}} title='Ev' />
-          {this.state.polygons.map(polygon => (
-            <Polygon
-              key={polygon.id}
-              coordinates={polygon.coordinates}
-              holes={polygon.holes}
-              strokeColor="#F00"
-              fillColor="rgba(255,0,0,0.5)"
-              strokeWidth={1}
-            />
-          ))}
-          {this.state.editing && (
-            <Polygon
-              key={this.state.editing.id}
-              coordinates={this.state.editing.coordinates}
-              holes={this.state.editing.holes}
-              strokeColor="#000"
-              fillColor="rgba(255,0,0,0.5)"
-              strokeWidth={1}
-            />
-          )}
-        </MapView>
-
-        <View style={styles.buttonContainer}>
-          {this.state.editing && (
-            <TouchableOpacity
-              onPress={() => this.createHole()}
-              style={[styles.bubble, styles.button]}
-            >
-              <Text>
-                {this.state.creatingHole ? 'Finish Hole' : 'Create Hole'}
-              </Text>
-            </TouchableOpacity>
-          )}
-          {this.state.editing && (
-            <TouchableOpacity
-              onPress={() => this.finish()}
-              style={[styles.bubble, styles.button]}
-            >
-              <Text>Finish</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-        <TouchableOpacity
-          onPress={() => this.clear()}
-          style={[styles.bubble, styles.button]}
-        >
-          <Text>Clear</Text>
-        </TouchableOpacity>
-      </View>
-    )
-  }
+  return (
+    <View style={{ flexDirection: 'row' }}>
+      <TouchableOpacity onPress={()=> toggleDrawer()}>
+        {/*Donute Button Image */}
+        <Image
+          source={{uri: 'https://raw.githubusercontent.com/AboutReact/sampleresource/master/drawerWhite.png'}}
+          style={{ width: 25, height: 25, marginLeft: 5 }}
+        />
+      </TouchableOpacity>
+    </View>
+  );
 }
 
-Maps.propTypes = {
-  provider: ProviderPropType
+function firstScreenStack({ navigation }) {
+  return (
+      <Stack.Navigator initialRouteName="FirstPage">
+        <Stack.Screen
+          name="FirstPage"
+          component={FirstPage}
+          options={{
+            title: 'Map', //Set Header Title
+            headerLeft: ()=> <NavigationDrawerStructure navigationProps={navigation} />,
+            headerStyle: {
+              backgroundColor: 'green', //Set Header color
+            },
+            headerTintColor: '#fff', //Set Header text color
+            headerTitleStyle: {
+              fontWeight: 'bold', //Set Header text style
+            },
+          }}
+        />
+      </Stack.Navigator>
+  );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-end',
-    alignItems: 'center'
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject
-  },
-  bubble: {
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 20
-  },
-  latlng: {
-    width: 200,
-    alignItems: 'stretch'
-  },
-  button: {
-    width: 80,
-    paddingHorizontal: 12,
-    alignItems: 'center',
-    marginHorizontal: 10
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    marginVertical: 20,
-    backgroundColor: 'transparent'
-  }
-})
+function secondScreenStack({ navigation }) {
+  return (
+    <Stack.Navigator
+      initialRouteName="SecondPage"
+      screenOptions={{
+        headerLeft: ()=> <NavigationDrawerStructure navigationProps={navigation} />,
+        headerStyle: {
+          backgroundColor: 'green', //Set Header color
+        },
+        headerTintColor: '#fff', //Set Header text color
+        headerTitleStyle: {
+          fontWeight: 'bold', //Set Header text style
+        }
+      }}>
+      <Stack.Screen
+        name="SecondPage"
+        component={SecondPage}
+        options={{
+          title: 'Fields', //Set Header Title
+          
+        }}/>
+     
+    </Stack.Navigator>
+  );
+}
+function thirdScreenStack({ navigation }) {
+  return (
+      <Stack.Navigator initialRouteName="ThirdPage">
+        <Stack.Screen
+          name="ThirdPage"
+          component={ThirdPage}
+          options={{
+            title: 'Home', //Set Header Title
+            headerLeft: ()=> <NavigationDrawerStructure navigationProps={navigation} />,
+            headerStyle: {
+              backgroundColor: 'green', //Set Header color
+            },
+            headerTintColor: '#fff', //Set Header text color
+            headerTitleStyle: {
+              fontWeight: 'bold', //Set Header text style
+            },
+          }}
+        />
+      </Stack.Navigator>
+  );
+}
+function App() {
+  return (
+    <NavigationContainer>
+      <Drawer.Navigator
+        drawerContentOptions={{
+          activeTintColor: 'green',
+          itemStyle: { marginVertical: 5 },
+        }}>
+           <Drawer.Screen
+          name="Thirdpage"
+          options={{ drawerLabel: 'Home' }}
+          component={thirdScreenStack} />
+        <Drawer.Screen
+          name="FirstPage"
+          options={{ drawerLabel: 'Map' }}
+          component={firstScreenStack} />
+        <Drawer.Screen
+          name="SecondPage"
+          options={{ drawerLabel: 'Fields' }}
+          component={secondScreenStack} />
+      </Drawer.Navigator>
+    </NavigationContainer>
+  );
+}
 
-export default Maps
+export default App;
