@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button, View, Text, SafeAreaView } from 'react-native';
-
+import { color } from 'react-native-reanimated';
+//Not ready yet
 const SecondPage = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -13,12 +14,21 @@ const SecondPage = ({ navigation }) => {
           }}>
           <Text
             style={{
-              fontSize: 25,
+              fontSize: 20,
               textAlign: 'center',
-              marginBottom: 16
+              marginBottom: 16,
+              color: 'blue'
             }}>
-              You don't have fields yet
+              Area: 105302.625 m^2
+              
            </Text>
+           <Text style={{
+              fontSize: 20,
+              textAlign: 'center',
+              marginBottom: 16,
+              color: 'green'
+            }}>Total water need is 315.906 m^3</Text>
+          
          </View>
       </View>
     </SafeAreaView>

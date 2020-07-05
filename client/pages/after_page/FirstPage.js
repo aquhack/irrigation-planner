@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 import {getAreaOfPolygon} from 'geolib'
+
+
+
 import {
   StyleSheet,
   View,
@@ -76,7 +79,6 @@ class Maps extends Component {
    editing: null,
    creatingHole: false,
   });
- 
   }
 
   clear = () => {
@@ -176,7 +178,7 @@ class Maps extends Component {
           onPress={e => this.onPress(e)}
           {...mapOptions}
         >
-          <Marker coordinate={{latitude:this.state.region.latitude,longitude:this.state.region.longitude}} title='Target field' />
+          <Marker coordinate={{latitude:this.state.region.latitude,longitude:this.state.region.longitude}}  />
           {this.state.polygons.map(polygon => (
             <Polygon
               key={polygon.id}
@@ -218,6 +220,7 @@ class Maps extends Component {
               <Text>Finish</Text>
             </TouchableOpacity>
           )}
+            
         </View>
         <TouchableOpacity
           onPress={() => this.clear()}
@@ -225,6 +228,7 @@ class Maps extends Component {
         >
           <Text>Clear</Text>
         </TouchableOpacity>
+        
       </View>
     )
   }

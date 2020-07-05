@@ -9,7 +9,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import FirstPage from './pages/after_page/FirstPage'
-import SecondPage from './pages/after_page/SecondPage'
 import ThirdPage from './pages/after_page/Thirdpage'
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -56,31 +55,7 @@ function firstScreenStack({ navigation }) {
   );
 }
 
-function secondScreenStack({ navigation }) {
-  return (
-    <Stack.Navigator
-      initialRouteName="SecondPage"
-      screenOptions={{
-        headerLeft: ()=> <NavigationDrawerStructure navigationProps={navigation} />,
-        headerStyle: {
-          backgroundColor: 'green', //Set Header color
-        },
-        headerTintColor: '#fff', //Set Header text color
-        headerTitleStyle: {
-          fontWeight: 'bold', //Set Header text style
-        }
-      }}>
-      <Stack.Screen
-        name="SecondPage"
-        component={SecondPage}
-        options={{
-          title: 'Fields', //Set Header Title
-          
-        }}/>
-     
-    </Stack.Navigator>
-  );
-}
+
 function thirdScreenStack({ navigation }) {
   return (
       <Stack.Navigator initialRouteName="ThirdPage">
@@ -88,7 +63,7 @@ function thirdScreenStack({ navigation }) {
           name="ThirdPage"
           component={ThirdPage}
           options={{
-            title: 'Home', //Set Header Title
+            title: 'Result', //Set Header Title
             headerLeft: ()=> <NavigationDrawerStructure navigationProps={navigation} />,
             headerStyle: {
               backgroundColor: 'green', //Set Header color
@@ -110,18 +85,15 @@ function App() {
           activeTintColor: 'green',
           itemStyle: { marginVertical: 5 },
         }}>
-           <Drawer.Screen
-          name="Thirdpage"
-          options={{ drawerLabel: 'Home' }}
-          component={thirdScreenStack} />
+          
         <Drawer.Screen
           name="FirstPage"
           options={{ drawerLabel: 'Map' }}
           component={firstScreenStack} />
-        <Drawer.Screen
-          name="SecondPage"
-          options={{ drawerLabel: 'Fields' }}
-          component={secondScreenStack} />
+           <Drawer.Screen
+          name="Thirdpage"
+          options={{ drawerLabel: 'Result' }}
+          component={thirdScreenStack} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
